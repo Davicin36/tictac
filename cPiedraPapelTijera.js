@@ -1,74 +1,118 @@
-function aleatorio( min , max ) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
 
-function eleccion (jugada) {
-    let resultado = ""
-    if (jugada == 1){
-        resultado = "piedra"
-    }else if (jugada == 2){
-        resultado = "papel"
-    }else if (jugada == 3){
-        resultado = "tijera"
-    }else if (jugada == 4){
-        resultado = "lagarto"
-    }else if (jugada == 5){
-        resultado = "spock"
-    }else {
-        resultado = "FALLASTE";
-    }; return resultado
-}
 let jugador=0
 let pc=0
 let vencer=0
 let perder=0
 
-//1 piedra gana a 3 y 4, 2 para papel gana a 1 y 5, 3 para tijera gana a 2 y 4, 4 para lagarto gana a 2 y 5, 5 para spock gana a 1 y 3
+const emojis = {
+    1: "🥌",
+    2: "🧻",
+    3: "✂",
+    4: "🦎",
+    5: "🖖"
+}
 
-while( vencer<3 && perder<3) {
+const victorias = {
+    1: [3, 4], // piedra gana a tijera y lagarto
+    2: [1, 5], // papel gana piedra y spock
+    3: [2, 4], //tijera gana a papel y lagarto
+    4: [2, 5], // lagarto gana a papel y spock
+    5: [1, 3] // spock gana a piedra y papel
+}
+
+const btnPiedra = document.getElementById("btnPiedra");
+btnPiedra.addEventListener("click", () => partida(1) )
+
+const btnPapel = document.getElementById("btnPapel");
+btnPapel.addEventListener("click", () => partida(2))
+
+const btnTijera = document.getElementById("btnTijera");
+btnTijera.addEventListener("click", () => partida(3))
+
+const btnLagarto = document.getElementById("btnLagarto");
+btnLagarto.addEventListener("click", () => partida(4))
+
+const btnSpock = document.getElementById("btnSpock");
+btnSpock.addEventListener("click", () => partida(5))
+
+
+
+const eleccionJugador = document.getElementById("eleccionDelJugador");
+const eleccionJugadorEmoji = document.getElementById("eleccionJugadorEmoji")
+
+const eleccionPc = document.getElementById("eleccionDelPC");
+const eleccionPCEmoji = document.getElementById("eleccionPCEmoji")
+
+const resultado = document.getElementById("resultado");
+
+const resultadoJugador = document.getElementById("resultadoJugador");
+const resultadoPc = document.getElementById("resultadoPC");
+
+function eleccion (jugada) {
+    const opciones = {
+        1:  "Piedra",
+        2: "Papel",
+        3: "Tijera",
+        4: "Lagarto",
+        5: "Spock"
+    }
+    return opciones [jugada] || "FALLASTE"
+}
+
+
+//funcion principal
+const partida = (jugadaJugador) => {
+
+    jugador = jugadaJugador
     pc=aleatorio (1,5)
-    jugador=prompt ("Elige: 1 para 🥌, 2 para 🧻, 3 para ✂, 4 para 🦎, 5 para 🖖")
-    alert ("PC elige: " + eleccion(pc))
-    alert ("Elegiste: " + eleccion(jugador))
 
-// COMBATE
-    if (pc==jugador){
-        alert("EMPATE")
-    }else if (jugador == 1 && pc == 3){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 1 && pc == 4){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 2 && pc == 1){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 2 && pc == 5){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 3 && pc == 2){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 3 && pc == 4){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 4 && pc == 2){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 4 && pc == 5){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 5 && pc == 1){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else if (jugador == 5 && pc == 3){
-            alert("GANASTE")
-            vencer = vencer + 1
-    }else {
-            alert("PERDISTE")
-            perder = perder + 1
+    eleccionJugador.innerHTML = eleccion(jugador)
+    eleccionJugadorEmoji.innerHTML = emojis[jugador]
+    
+    eleccionPc.innerHTML = eleccion(pc)
+    eleccionPCEmoji.innerHTML = emojis[pc]
+
+    if (pc=== jugador) {
+        resultado.innerHTML = "¡EMPATE! 🤝"
+        resultado.className = "empate"
+    }else if (victorias[jugador].includes(pc)){
+        resultado.innerHTML = "¡GANASTES! 🎉"
+        resultado.className = "ganaste"
+        vencer++
+        resultadoJugador.innerHTML = vencer
+    } else {
+        resultado.innerHTML = " ¡PERDISTE! 😢"
+        resultado.className = "perdiste"
+        perder++
+        resultadoPc.innerHTML = perder
+    }
+
+    if (vencer >= 3){
+        setTimeout(() => {
+            alert ("¡FELICADES! ¡ Has ganado el juego con " + vencer + " victorias!")
+            reiniciarJuego()
+        }, 500)
+    }else if (perder >=3){
+        setTimeout(() => {
+            alert ("La PC ha ganado el juego con " + perder + " victorias, ¡Intentalo de nuevo!!")
+            reiniciarJuego()
+        }, 500)
     }
 }
 
-alert ("Ganaste "+ vencer +" veces. Perdiste "+ perder +" veces.")
+function reiniciarJuego () {
+    vencer = 0
+    perder = 0
+    resultadoJugador.innerHTML ="0"
+    resultadoPc.innerHTML = "0"
+    resultado.innerHTML = ""
+    resultado.className = ""
+    eleccionDelJugador.innerHTML = "Esperando..."
+    eleccionPc.innerHTML = "Esperando..."
+    eleccionJugadorEmoji.innerHTML = "❓"
+    eleccionPCEmoji.innerHTML = " ❓"
+}
 
+function aleatorio( min , max ) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
